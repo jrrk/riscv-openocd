@@ -30,6 +30,10 @@ if ULINK
 openocd_LDADD += -lm
 endif
 
+if VERPORT
+openocd_LDADD += ../../obj_dir/Vglbl__ALL.a -lstdc++
+endif
+
 libopenocd_la_SOURCES = \
 	hello.c \
 	openocd.c

@@ -1,6 +1,6 @@
 include $(top_srcdir)/common.mk
 
-AM_CXXFLAGS = -I/usr/local/share/verilator/include -I verport/obj_dir -DVM_TRACE=1
+AM_CXXFLAGS = -I/usr/local/share/verilator/include -I $(top_srcdir)/obj_dir -DVM_TRACE=1
 
 noinst_LTLIBRARIES = libocdjtagdrivers.la
 libocdjtagdrivers_la_LIBADD =
@@ -59,7 +59,7 @@ if PARPORT
 DRIVERFILES += parport.c
 endif
 if VERPORT
-DRIVERFILES += verport/verport.c verport/sim_main.cpp 
+DRIVERFILES += verport/verport.c verport/sim_main.cpp verport/verilated.cpp verport/verilated_vcd_c.cpp
 SUBDIRS += verport
 endif
 if DUMMY
