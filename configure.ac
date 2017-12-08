@@ -24,6 +24,7 @@ AH_BOTTOM([
 
 AC_LANG_C
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
@@ -385,6 +386,10 @@ AC_ARG_ENABLE([parport],
   AS_HELP_STRING([--enable-parport], [Enable building the pc parallel port driver]),
   [build_parport=$enableval], [build_parport=no])
 
+AC_ARG_ENABLE([verport],
+  AS_HELP_STRING([--enable-verport], [Enable building the parallel-style verilator driver]),
+  [build_verport=$enableval], [build_verport=no])
+
 AC_ARG_ENABLE([parport_ppdev],
   AS_HELP_STRING([--disable-parport-ppdev],
       [Disable use of ppdev (/dev/parportN) for parport (for x86 only)]),
@@ -637,6 +642,13 @@ if test $build_parport = yes; then
   AC_DEFINE([BUILD_PARPORT], [1], [1 if you want parport.])
 else
   AC_DEFINE([BUILD_PARPORT], [0], [0 if you don't want parport.])
+fi
+
+if test $build_verport = yes; then
+  build_bitbang=yes
+  AC_DEFINE([BUILD_VERPORT], [1], [1 if you want verport.])
+else
+  AC_DEFINE([BUILD_VERPORT], [0], [0 if you don't want verport.])
 fi
 
 if test $build_dummy = yes; then
@@ -1200,6 +1212,7 @@ fi
 
 AM_CONDITIONAL([RELEASE], [test $build_release = yes])
 AM_CONDITIONAL([PARPORT], [test $build_parport = yes])
+AM_CONDITIONAL([VERPORT], [test $build_verport = yes])
 AM_CONDITIONAL([DUMMY], [test $build_dummy = yes])
 AM_CONDITIONAL([GIVEIO], [test x$parport_use_giveio = xyes])
 AM_CONDITIONAL([EP93XX], [test $build_ep93xx = yes])
@@ -1296,6 +1309,7 @@ AC_CONFIG_FILES([
   src/jtag/Makefile
   src/jtag/drivers/Makefile
   src/jtag/drivers/usb_blaster/Makefile
+  src/jtag/drivers/verport/Makefile
   src/jtag/hla/Makefile
   src/jtag/aice/Makefile
   src/transport/Makefile

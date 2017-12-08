@@ -1,5 +1,7 @@
 include $(top_srcdir)/common.mk
 
+AM_CXXFLAGS = -I/usr/local/share/verilator/include -I verport/obj_dir -DVM_TRACE=1
+
 noinst_LTLIBRARIES = libocdjtagdrivers.la
 libocdjtagdrivers_la_LIBADD =
 
@@ -55,6 +57,10 @@ DRIVERFILES += bitbang.c
 endif
 if PARPORT
 DRIVERFILES += parport.c
+endif
+if VERPORT
+DRIVERFILES += verport/verport.c verport/sim_main.cpp 
+SUBDIRS += verport
 endif
 if DUMMY
 DRIVERFILES += dummy.c
@@ -168,6 +174,10 @@ DIST_SUBDIRS = usb_blaster
 
 if INTERNAL_LIBJAYLINK
 DIST_SUBDIRS += libjaylink
+endif
+
+if VERPORT
+DIST_SUBDIRS += verport
 endif
 
 MAINTAINERCLEANFILES = $(srcdir)/Makefile.in

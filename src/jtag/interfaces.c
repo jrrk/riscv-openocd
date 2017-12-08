@@ -48,6 +48,9 @@ extern struct jtag_interface minidummy_interface;
 #if BUILD_PARPORT == 1
 extern struct jtag_interface parport_interface;
 #endif
+#if BUILD_VERPORT == 1
+extern struct jtag_interface verport_interface;
+#endif
 #if BUILD_DUMMY == 1
 extern struct jtag_interface dummy_interface;
 #endif
@@ -146,6 +149,9 @@ struct jtag_interface *jtag_interfaces[] = {
 #else /* standard drivers */
 #if BUILD_PARPORT == 1
 		&parport_interface,
+#endif
+#if BUILD_VERPORT == 1
+		&verport_interface,
 #endif
 #if BUILD_DUMMY == 1
 		&dummy_interface,
