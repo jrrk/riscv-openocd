@@ -372,8 +372,20 @@ static void jtag_add_ir_scan_noverify_callback(struct jtag_tap *active,
 /* If fields->in_value is filled out, then the captured IR value will be checked */
 void jtag_add_ir_scan(struct jtag_tap *active, struct scan_field *in_fields, tap_state_t state)
 {
+  int ir;
+  ir = in_fields->out_value[0] & 0x3F;
+  
 	assert(state != TAP_RESET);
 
+  switch(ir)
+          {
+          case 0x2: LOG_DEBUG("USERID selected\n"); break;
+          case 0x9: LOG_DEBUG("IDCODE selected\n"); break;
+          case 0x22: LOG_DEBUG("DTMCS selected\n"); break;
+          case 0x23: LOG_DEBUG("DMI selected\n"); break;
+          default: LOG_DEBUG("IR %d selected\n", ir); abort(); break;
+          }
+        
 	if (jtag_verify && jtag_verify_capture_ir) {
 		/* 8 x 32 bit id's is enough for all invocations */
 
@@ -1069,12 +1081,16 @@ static bool jtag_examine_chain_check(uint8_t *idcodes, unsigned count)
 static void jtag_examine_chain_display(enum log_levels level, const char *msg,
 	const char *name, uint32_t idcode)
 {
+  extern int xilinx;
+  unsigned int mfg = (unsigned int)EXTRACT_MFG(idcode);
+  xilinx = mfg == 0x049;
+  
 	log_printf_lf(level, __FILE__, __LINE__, __func__,
 		"JTAG tap: %s %16.16s: 0x%08x "
 		"(mfg: 0x%3.3x (%s), part: 0x%4.4x, ver: 0x%1.1x)",
 		name, msg,
 		(unsigned int)idcode,
-		(unsigned int)EXTRACT_MFG(idcode),
+		mfg,
 		jep106_manufacturer(EXTRACT_JEP106_BANK(idcode), EXTRACT_JEP106_ID(idcode)),
 		(unsigned int)EXTRACT_PART(idcode),
 		(unsigned int)EXTRACT_VER(idcode));
