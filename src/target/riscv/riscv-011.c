@@ -90,13 +90,11 @@
 
 /*** JTAG registers. ***/
 
-#define DTMCONTROL					0x10
 #define DTMCONTROL_DBUS_RESET		(1<<16)
 #define DTMCONTROL_IDLE				(7<<10)
 #define DTMCONTROL_ADDRBITS			(0xf<<4)
 #define DTMCONTROL_VERSION			(0xf)
 
-#define DBUS						0x11
 #define DBUS_OP_START				0
 #define DBUS_OP_SIZE				2
 typedef enum {
@@ -284,7 +282,7 @@ static uint32_t dtmcontrol_scan(struct target *target, uint32_t out)
 
 	buf_set_u32(out_value, 0, 32, out);
 
-	jtag_add_ir_scan(target->tap, &select_dtmcontrol, TAP_IDLE);
+	jtag_add_ir_scan(target->tap, select_dtmcontrol(target), TAP_IDLE);
 
 	field.num_bits = 32;
 	field.out_value = out_value;
@@ -292,7 +290,7 @@ static uint32_t dtmcontrol_scan(struct target *target, uint32_t out)
 	jtag_add_dr_scan(target->tap, 1, &field, TAP_IDLE);
 
 	/* Always return to dbus. */
-	jtag_add_ir_scan(target->tap, &select_dbus, TAP_IDLE);
+	jtag_add_ir_scan(target->tap, select_dbus(target), TAP_IDLE);
 
 	int retval = jtag_execute_queue();
 	if (retval != ERROR_OK) {
@@ -311,7 +309,7 @@ static uint32_t idcode_scan(struct target *target)
 	struct scan_field field;
 	uint8_t in_value[4];
 
-	jtag_add_ir_scan(target->tap, &select_idcode, TAP_IDLE);
+	jtag_add_ir_scan(target->tap, select_idcode(target), TAP_IDLE);
 
 	field.num_bits = 32;
 	field.out_value = NULL;
@@ -325,7 +323,7 @@ static uint32_t idcode_scan(struct target *target)
 	}
 
 	/* Always return to dbus. */
-	jtag_add_ir_scan(target->tap, &select_dbus, TAP_IDLE);
+	jtag_add_ir_scan(target->tap, select_dbus(target), TAP_IDLE);
 
 	uint32_t in = buf_get_u32(field.in_value, 0, 32);
 	LOG_DEBUG("IDCODE: 0x0 -> 0x%x", in);

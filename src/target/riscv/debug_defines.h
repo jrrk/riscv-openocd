@@ -92,7 +92,6 @@
 #define DTM_DTMCS_VERSION_OFFSET            0
 #define DTM_DTMCS_VERSION_LENGTH            4
 #define DTM_DTMCS_VERSION                   (0xfU << DTM_DTMCS_VERSION_OFFSET)
-#define DTM_DMI                             0x11
 /*
 * Address used for DMI access. In Update-DR this value is used
 * to access the DM over the DMI.

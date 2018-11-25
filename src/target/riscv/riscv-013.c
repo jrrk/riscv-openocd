@@ -396,7 +396,8 @@ static void dump_field(const struct scan_field *field)
 
 static void select_dmi(struct target *target)
 {
-	static uint8_t ir_dmi[1] = {DTM_DMI};
+	uint8_t ir_dmi[1];
+	ir_dmi[0] = xilinx ? 0x23 : 0x11;
 	struct scan_field field = {
 		.num_bits = target->tap->ir_length,
 		.out_value = ir_dmi,
@@ -416,7 +417,7 @@ static uint32_t dtmcontrol_scan(struct target *target, uint32_t out)
 
 	buf_set_u32(out_value, 0, 32, out);
 
-	jtag_add_ir_scan(target->tap, &select_dtmcontrol, TAP_IDLE);
+	jtag_add_ir_scan(target->tap, select_dtmcontrol(target), TAP_IDLE);
 
 	field.num_bits = 32;
 	field.out_value = out_value;

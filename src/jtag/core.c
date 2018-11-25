@@ -1040,6 +1040,7 @@ static bool jtag_examine_chain_match_tap(const struct jtag_tap *tap)
  */
 static int jtag_examine_chain(void)
 {
+	extern int xilinx;
 	int retval;
 	unsigned max_taps = jtag_tap_count();
 
@@ -1106,10 +1107,11 @@ static int jtag_examine_chain(void)
 		}
 
 		if ((idcode & 1) == 0) {
+		        uint32_t exp_idcode = tap->expected_ids_cnt ? tap->expected_ids[0] : 0;
 			/* Zero for LSB indicates a device in bypass */
-			LOG_INFO("TAP %s does not have IDCODE", tap->dotted_name);
-			tap->hasidcode = false;
-			tap->idcode = 0;
+			LOG_INFO("TAP %s does not have IDCODE, assuming 0x%X", tap->dotted_name, exp_idcode);
+			tap->hasidcode = exp_idcode ? true : false;
+			tap->idcode = exp_idcode;
 
 			bit_count += 1;
 		} else {
@@ -1120,6 +1122,8 @@ static int jtag_examine_chain(void)
 
 			bit_count += 32;
 		}
+		unsigned int mfg = (unsigned int)EXTRACT_MFG(tap->idcode);
+		xilinx = mfg == 0x049;
 
 		/* ensure the TAP ID matches what was expected */
 		if (!jtag_examine_chain_match_tap(tap))
