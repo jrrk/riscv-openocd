@@ -422,8 +422,9 @@ static uint32_t dtmcontrol_scan(struct target *target, uint32_t out)
 	field.num_bits = 32;
 	field.out_value = out_value;
 	field.in_value = in_value;
+        jtag_add_clocks(32);
 	jtag_add_dr_scan(target->tap, 1, &field, TAP_IDLE);
-
+        
 	/* Always return to dmi. */
 	select_dmi(target);
 
@@ -478,14 +479,15 @@ static dmi_status_t dmi_scan(struct target *target, uint32_t *address_in,
 	buf_set_u32(out, DTM_DMI_ADDRESS_OFFSET, info->abits, address_out);
 
 	/* Assume dbus is already selected. */
+        jtag_add_clocks(32);
 	jtag_add_dr_scan(target->tap, 1, &field, TAP_IDLE);
-
+        
 	int idle_count = info->dmi_busy_delay;
 	if (exec)
 		idle_count += info->ac_busy_delay;
 
 	if (idle_count)
-		jtag_add_runtest(idle_count, TAP_IDLE);
+		jtag_add_clocks(idle_count);
 
 	int retval = jtag_execute_queue();
 	if (retval != ERROR_OK) {
